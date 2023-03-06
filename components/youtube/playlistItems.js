@@ -2,14 +2,17 @@ import { google } from "googleapis";
 
 const service = google.youtube("v3");
 
-export default function getPlaylistItems(
+export default async function ytGetPlaylistItems(
   auth,
   options = {
-    part: ["contentDetails"],
-    playlistId: "PLFmYDZOVM51cWWlvGUNQw9pUgI3SRFGe3",
+    part: [],
+    playlistId: "",
   }
 ) {
-  service.playlistItems
+  if (!(options.playlistId && options.part && options.part.length)) {
+    return;
+  }
+  return await service.playlistItems
     .list({
       part: options.part,
       playlistId: options.playlistId,
@@ -22,10 +25,12 @@ export default function getPlaylistItems(
         //   console.log("Response", response);
         const data = response.data;
         const items = data.items;
-        console.log(items);
+        // console.log(items);
+        return items;
       },
       function (err) {
         console.error("Execute error", err);
+        return;
       }
     );
 }
