@@ -109,11 +109,12 @@ const runYoutube = async (runFunction, params = []) => {
         }
         console.log("content", JSON.parse(content));
         // Authorize a client with the loaded credentials, then call the YouTube API.
-        const callBack = await authorize(JSON.parse(content), (auth) =>
-          runFunction(auth, ...params)
+        const items = []
+        await authorize(JSON.parse(content), (auth) =>
+          runFunction(auth, ...params,items)
         );
-        console.log("a", callBack);
-        resolve(callBack);
+        // console.log("a", items);
+        resolve(items);
       }
     );
   });

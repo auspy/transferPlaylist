@@ -5,7 +5,7 @@ import { toFetch } from "../helper/basic.js";
 
 // URLS
 const redirect_uri = "http://localhost:3000/spotify";
-const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";
+// const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";
 const urlSpotifySearch = "https://api.spotify.com/v1/search?";
 const urlToken = "https://accounts.spotify.com/api/token";
 const urlSpotifyCreatePlaylist = (user_id) =>
@@ -35,7 +35,7 @@ const spotifyLogin = (req, res) => {
 const spotifyGetAccessToken = (req) => {
   return new Promise((resolve, reject) => {
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-    console.log(client_secret, "secret");
+    // console.log(client_secret, "secret");
     const client_id = process.env.SPOTIFY_CLIENT_ID;
 
     // console.log("spotify callback", req);
@@ -51,7 +51,6 @@ const spotifyGetAccessToken = (req) => {
       // );
       console.log("state_mismatch");
     } else {
-      console.log("here");
       // TO GET ACCRESS TOKENS
       // convert data to url encoded data
       const details = {
@@ -67,7 +66,7 @@ const spotifyGetAccessToken = (req) => {
         formBody.push(encodedKey + "=" + encodedValue);
       }
       formBody = formBody.join("&");
-      console.log(formBody, "formBody");
+      // console.log(formBody, "formBody");
       fetch(urlToken, {
         method: "POST",
         headers: {
@@ -80,7 +79,7 @@ const spotifyGetAccessToken = (req) => {
       })
         .then((res) => res.json())
         .then((r) => {
-          console.log("spotifyGetAccessToken RESPONSE", r);
+          // console.log("spotifyGetAccessToken RESPONSE", r);
           const { access_token } = r;
           // res.json(r);
 
@@ -99,21 +98,23 @@ const spotifySearch = (req, res) => {
     spotifyGetAccessToken(req).then(
       async ({ token, data }) => {
         const searchFor = data && JSON.parse(data);
-        console.log(data, searchFor, "data");
+        console.log(searchFor, "data");
         const found = {};
+        const failed = [];
         for (const search of searchFor) {
           const track = search?.track?.[1] || "lonely";
+          const query = search?.track?.join(" ");
           // const artist = (search?.track?.[0] || "Akon").replace(/\s/, "%20");
           // const year = search?.year;
           const type = ["track"].toString();
           const searchQuery = queryString.stringify({
-            q: `${search?.track?.join(" ")}`,
+            q: `${query}`,
             type: type,
             market: "ES",
             limit: 5,
             // offset: 5,
           });
-          console.log("token", urlSpotifySearch + searchQuery);
+          console.log("token -", query, "=>", urlSpotifySearch + searchQuery);
           await fetch(urlSpotifySearch + searchQuery, {
             method: "GET",
             headers: {
@@ -127,10 +128,11 @@ const spotifySearch = (req, res) => {
               const items = value.tracks?.items;
               // resolve(items);
               const filtered = spotifyFilterSearch(items, search);
-              if (!filtered) {
+              if (filtered.includes("_alt")) {
                 console.log("FILTERED NULL FOR", track);
+                failed.push(query);
               }
-              found[track] = filtered || items;
+              found[track] = filtered?.replace("_alt", "");
             });
         }
         const uris = Object.values(found).filter(
@@ -138,7 +140,7 @@ const spotifySearch = (req, res) => {
             item && typeof item == "string" && item.split("spotify:track:")
         );
         spotifyAddToPlaylistProcess("current", uris, token);
-        res.json(uris);
+        res.json({ found: uris, failed });
         // res.send(token)
       },
       (err) => {
@@ -162,6 +164,7 @@ const spotifyFilterSearch = (foundItems, search) => {
   if (!(foundItems && typeof foundItems == "object")) {
     return;
   }
+  let ifFoundNothing = foundItems[0]?.uri;
   // Object.keys(foundItems).forEach((id) => {
   //   console.log(id, foundItems[id], foundItems,"iemmmm");
   for (const result of foundItems) {
@@ -173,7 +176,9 @@ const spotifyFilterSearch = (foundItems, search) => {
     for (const item of search.track) {
       // console.log(search, result);
       // console.log(result.name?.toLowerCase(), item?.toLowerCase(), "here");
-      if (result.name?.toLowerCase() == item?.toLowerCase()) {
+      const name = result?.name?.split("(From")?.[0].trim().toLowerCase();
+      // to remove words like (From tu jhooti me makaar) as it will not be able to match any name from search array
+      if (name == item?.toLowerCase()) {
         // if match then check popularity
         if (maxPopularity < result.popularity) {
           maxPopularity = result.popularity;
@@ -185,7 +190,7 @@ const spotifyFilterSearch = (foundItems, search) => {
   }
   // });
   // console.log(found, "found");
-  return found;
+  return found || ifFoundNothing + "_alt";
 };
 
 const spotifyCreatePlaylist = (user_id, token) => {
@@ -211,7 +216,7 @@ const spotifyCreatePlaylist = (user_id, token) => {
     })
       .then((res) => res.json())
       .then((value) => {
-        console.log("value", value);
+        // console.log("value", value);
         const playlistId = value.id;
         console.log("PLATLIST CREATED", playlistId);
         resolve(playlistId);
@@ -229,20 +234,23 @@ const spotifyAddItemsToPlaylist = async (playlistId, uris = [], token) => {
     return;
   }
   console.log("-- add to playlist start --");
-  const res = await toFetch(
-    urlSpotifyAddToPlaylist(playlistId),
-    {
-      uris: uris,
-    },
-    "POST",
-    { Authorization: `Bearer ${token}` }
-  );
-  if (res) {
-    // success
-    console.log("Successfully added items to playlist");
-    return "ok";
+  // to add only 100 uris per request
+  for (let index = 0; index < uris.length; index += 100) {
+    const res = await toFetch(
+      urlSpotifyAddToPlaylist(playlistId),
+      {
+        uris: uris.slice(index, index + 100),
+      },
+      "POST",
+      { Authorization: `Bearer ${token}` }
+    );
+    if (res) {
+      // success
+      console.log("Successfully added items to playlist");
+    } else {
+      console.log("Failed to add tracks to playlist", index);
+    }
   }
-  console.log("Failed to add tracks to playlist");
 };
 
 const spotifyAddToPlaylistProcess = async (user_id, uris, token) => {

@@ -14,23 +14,28 @@ export const ytGetPlaylistItemsOfId = async (req, res) => {
     (items) => {
       //   console.log(items, "items");
       if (items) {
-        const found = [];
         const search = [];
         items.map((item) => {
           //   console.log("item => ", item);
           const title = item.snippet?.title;
-          console.log("title", title);
+          // console.log("title", title);
           // * SEARCH FOR ARTIST AND SONG NAME
           //     * FROM TITLE
           // split using "-,|" to get track and artist name
           const searchFor = title
             .split(/[|\-\[\]\(\)]/i)
+            .filter((item) => item && item.toLowerCase() != "song")
             .map(
               (item) =>
                 item &&
-                item.replace(/^official.*video$|(\[|\()\s+(\]|\))/i, "").trim()
+                item
+                  .replace(
+                    /^official.*(video|audio|trailer)$|(\[|\()\s+(\]|\))/i,
+                    ""
+                  )
+                  .trim()
               // contains 2 regex separated by |
-              // to replace words starting from official and ending with video | to replace empty brackets
+              // to replace words starting from official and ending with video or audio or trailer | to replace empty brackets
             )
             .filter((item) => item && item);
 
@@ -39,10 +44,10 @@ export const ytGetPlaylistItemsOfId = async (req, res) => {
             item.contentDetails?.["videoPublishedAt"]
           ).getFullYear();
 
-          console.log("searchFor", searchFor);
+          // console.log("searchFor", searchFor);
           search.push({ track: searchFor, year });
         });
-        console.log("serh", search);
+        // console.log("serh", search);
         // * TO START THE SEARCH
         login(
           {
@@ -50,7 +55,7 @@ export const ytGetPlaylistItemsOfId = async (req, res) => {
             body: search,
           },
           res
-        ); 
+        );
       }
     },
     (err) => {

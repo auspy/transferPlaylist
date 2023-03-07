@@ -19,7 +19,7 @@ export async function toFetch(
   return await fetch(newUrl, options)
     .then((response) => response.json())
     .then((docInfo) => {
-      console.log("response data?", docInfo);
+      // console.log("response data?", docInfo);
       // return docId.body.txnToken;
       return docInfo;
     })

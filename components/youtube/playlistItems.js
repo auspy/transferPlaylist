@@ -7,30 +7,42 @@ export default async function ytGetPlaylistItems(
   options = {
     part: [],
     playlistId: "",
-  }
+  },
+  items = []
 ) {
   if (!(options.playlistId && options.part && options.part.length)) {
     return;
   }
-  return await service.playlistItems
+  await service.playlistItems
     .list({
-      part: options.part,
-      playlistId: options.playlistId,
       auth,
       ...options,
     })
     .then(
-      function (response) {
+      async function (response) {
         // Handle the results here (response.result has the parsed body).
-        //   console.log("Response", response);
+        const nextPageToken = response.data.nextPageToken;
+        // console.log("Response", response);
         const data = response.data;
-        const items = data.items;
+        const item = data.items;
+        items.push(...item);
+        if (nextPageToken) {
+          await ytGetPlaylistItems(
+            auth,
+            {
+              part: options.part,
+              playlistId: options.playlistId,
+              pageToken: nextPageToken,
+            },
+            items
+          );
+        }
+
         // console.log(items);
-        return items;
       },
       function (err) {
         console.error("Execute error", err);
-        return;
       }
     );
+  return items;
 }
