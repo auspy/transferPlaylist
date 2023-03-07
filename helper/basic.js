@@ -4,15 +4,20 @@ export async function toFetch(
   newUrl,
   data,
   method = "POST",
-  headers = { Authorization, "Content-Type": "application/json" }
+  accessToken,
+  headers = {}
 ) {
   const options = {
     method: method,
     headers: {
+      "Content-Type": "application/json",
       ...headers,
     },
     redirect: "follow",
   };
+  if (accessToken) {
+    options["headers"]["Authorization"] = `Bearer ${accessToken}`;
+  }
   if (data) {
     options["body"] = JSON.stringify(data);
   }
@@ -27,4 +32,8 @@ export async function toFetch(
       console.log("error in fetch is", err);
       return null;
     });
+}
+
+export async function delay(ms = 0) {
+  return setTimeout(() => {}, ms);
 }

@@ -1,19 +1,17 @@
-import { google } from "googleapis";
-
-const service = google.youtube("v3");
+import { youtube } from "./ytImports.js";
 
 export default async function ytGetPlaylistItems(
   auth,
   options = {
     part: [],
     playlistId: "",
-  },
-  items = []
+  }
 ) {
+  const items = [];
   if (!(options.playlistId && options.part && options.part.length)) {
     return;
   }
-  await service.playlistItems
+  await youtube.playlistItems
     .list({
       auth,
       ...options,
@@ -27,15 +25,14 @@ export default async function ytGetPlaylistItems(
         const item = data.items;
         items.push(...item);
         if (nextPageToken) {
-          await ytGetPlaylistItems(
-            auth,
-            {
-              part: options.part,
-              playlistId: options.playlistId,
-              pageToken: nextPageToken,
-            },
-            items
-          );
+          const nextPageItems = await ytGetPlaylistItems(auth, {
+            part: options.part,
+            playlistId: options.playlistId,
+            pageToken: nextPageToken,
+          });
+          if (nextPageItems) {
+            items.push(...nextPageItems);
+          }
         }
 
         // console.log(items);

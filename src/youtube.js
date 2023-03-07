@@ -1,16 +1,18 @@
-import ytGetPlaylistItems from "../components/youtube/playlistItems.js";
-import runYoutube from "../components/youtube/quickstart.js";
-import { login } from "./spotify.js";
+import ytGetPlaylistItems from "../components/youtube/getPlaylistItems.js";
+import ytGetAuth from "../components/youtube/quickstart.js";
+import { spotifyLogin } from "./spotify.js";
 
-export const ytGetPlaylistItemsOfId = async (req, res) => {
+export const ytToSpotify = async (req, res) => {
   const playlistId = req.params?.playlistId;
   console.log("req.params", playlistId);
-  runYoutube(ytGetPlaylistItems, [
-    {
-      part: ["snippet", "contentDetails"],
-      playlistId: playlistId || "PLFmYDZOVM51clDamYDl75D1aVH6KYtMxL",
-    },
-  ]).then(
+  const auth = await ytGetAuth();
+  if (!auth) {
+    return "missing auth";
+  }
+  ytGetPlaylistItems(auth, {
+    part: ["snippet", "contentDetails"],
+    playlistId: playlistId || "PLFmYDZOVM51clDamYDl75D1aVH6KYtMxL",
+  }).then(
     (items) => {
       //   console.log(items, "items");
       if (items) {
@@ -49,7 +51,7 @@ export const ytGetPlaylistItemsOfId = async (req, res) => {
         });
         // console.log("serh", search);
         // * TO START THE SEARCH
-        login(
+        spotifyLogin(
           {
             ...req,
             body: search,
@@ -64,10 +66,10 @@ export const ytGetPlaylistItemsOfId = async (req, res) => {
   );
 };
 
-export const ytGetPlaylistItemsOf = (req, res) => {
+export const ytToSpotifyQuery = (req, res) => {
   const playlistId = req.query.playlistId;
   if (playlistId) {
-    res.redirect(`/ytPlayist/${playlistId}`);
+    res.redirect(`/ytToSpotify/${playlistId}`);
   } else {
     res.redirect("/");
   }

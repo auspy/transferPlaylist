@@ -6,7 +6,8 @@ const OAuth2 = google.auth.OAuth2;
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/youtube-nodejs-quickstart.json
-const SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
+const SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"];
+// const SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
 const TOKEN_DIR =
   (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) +
   "/.credentials/";
@@ -19,21 +20,28 @@ const TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
  * @param {function} callback The callback to call with the authorized client.
  */
 async function authorize(credentials, callback) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const clientSecret = credentials.web.client_secret;
     const clientId = credentials.web.client_id;
     const redirectUrl = credentials.web.redirect_uris[0];
+    if (!(clientSecret && clientId && redirectUrl)) {
+      reject("missing params authorize yt");
+    }
     const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
 
     // Check if we have previously stored a token.
     fs.readFile(TOKEN_PATH, async function (err, token) {
-      if (err) {
-        resolve(await getNewToken(oauth2Client, callback));
-      } else {
-        oauth2Client.credentials = JSON.parse(token);
-        const callBack = await callback(oauth2Client);
-        // console.log("sad", callBack);
-        resolve(callBack);
+      try {
+        if (err) {
+          resolve(await getNewToken(oauth2Client, callback));
+        } else {
+          oauth2Client.credentials = JSON.parse(token);
+          const callBack = await callback(oauth2Client);
+          // console.log("sad", callBack);
+          resolve(callBack);
+        }
+      } catch (error) {
+        reject(error);
       }
     });
   });
@@ -67,6 +75,8 @@ async function getNewToken(oauth2Client, callback) {
           reject(e);
         }
         oauth2Client.credentials = token;
+        console.log("token,", token);
+        // ! enter token by replacing %2F with /
         storeToken(token);
         resolve(await callback(oauth2Client));
       });
@@ -87,6 +97,9 @@ function storeToken(token) {
       throw err;
     }
   }
+  if (!token) {
+    return;
+  }
   fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
     if (err) throw err;
     console.log("Token stored to " + TOKEN_PATH);
@@ -94,30 +107,27 @@ function storeToken(token) {
 }
 
 // Load client secrets from a local file.
-const runYoutube = async (runFunction, params = []) => {
+const ytGetAuth = async () => {
   return new Promise((resolve, reject) => {
-    if (!runFunction) {
-      reject("missing runFuncition");
-    }
     fs.readFile(
       "/Users/spark/Desktop/reactApps/transferPlaylist/keys/client_secret.json",
       async function processClientSecrets(err, content) {
-        if (err) {
-          let e = "Error loading client secret file: " + err;
-          console.log(e);
-          reject(e);
+        try {
+          if (err) {
+            let e = "Error loading client secret file: " + err;
+            console.log(e);
+            reject(e);
+          }
+          console.log("content", JSON.parse(content));
+          // Authorize a client with the loaded credentials, then call the YouTube API.
+          await authorize(JSON.parse(content), (auth) => resolve(auth));
+          // console.log("a", items);
+        } catch (error) {
+          console.log("ytGetAuth", error, "ytGetAuth");
         }
-        console.log("content", JSON.parse(content));
-        // Authorize a client with the loaded credentials, then call the YouTube API.
-        const items = []
-        await authorize(JSON.parse(content), (auth) =>
-          runFunction(auth, ...params,items)
-        );
-        // console.log("a", items);
-        resolve(items);
       }
     );
   });
 };
 
-export default runYoutube;
+export default ytGetAuth;

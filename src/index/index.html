@@ -10,9 +10,14 @@
        <div id="login">
         <h1>First, log in to spotify</h1>
         <a href="/spotifyLogin">Log in spotify</a>
-        <form action="http://localhost:3000/ytPlayist" method="get">
-            <label for="playlistId">Enter playlist id</label>
+        <form action="http://localhost:3000/ytToSpotify" method="get">
+            <label for="playlistId">Enter yt playlist id</label>
             <input value="PLFmYDZOVM51clDamYDl75D1aVH6KYtMxL" type="text" name="playlistId" maxlength="200" />
+<input type="submit"  />
+        </form>
+        <form action="http://localhost:3000/spotifyToYt" method="get">
+            <label for="playlistId">Enter spotify playlist id</label>
+            <input value="523Lk85e0sFkOgPm2MId4o" type="text" name="playlistId" maxlength="200" />
 <input type="submit"  />
         </form>
        </div>

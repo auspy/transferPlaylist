@@ -1,25 +1,23 @@
 import queryString from "query-string";
-import { __dirname } from "../path.js";
+import {
+  urlCurrentUser,
+  urlSpPlaylistTracks,
+  urlSpCreatePlaylist,
+  urlSpotifySearch,
+  urlSpRedirect,
+  urlSpToken,
+  __dirname,
+} from "../paths.js";
 import fetch from "node-fetch";
 import { toFetch } from "../helper/basic.js";
 
-// URLS
-const redirect_uri = "http://localhost:3000/spotify";
-// const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";
-const urlSpotifySearch = "https://api.spotify.com/v1/search?";
-const urlToken = "https://accounts.spotify.com/api/token";
-const urlSpotifyCreatePlaylist = (user_id) =>
-  `https://api.spotify.com/v1/users/${user_id}/playlists`;
-const urlSpotifyAddToPlaylist = (playlist_id) =>
-  `https://api.spotify.com/v1/playlists/${playlist_id}/tracks`;
-const urlCurrentUser = "https://api.spotify.com/v1/me";
-
-const spotifyLogin = (req, res) => {
+const spotifyLogin = (req, res, redirect_uri = urlSpRedirect) => {
   const client_id = process.env.SPOTIFY_CLIENT_ID;
   const state = "123456789123456";
   const scope =
     "user-read-private user-read-email playlist-modify-public playlist-modify-private";
   const data = req.body;
+  // console.log("redirect_uri", redirect_uri);
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       queryString.stringify({
@@ -27,12 +25,12 @@ const spotifyLogin = (req, res) => {
         client_id: client_id,
         scope: scope,
         redirect_uri: redirect_uri,
-        state: JSON.stringify(data) || state,
+        state: JSON.stringify(data ? data : state),
       })
   );
 };
 
-const spotifyGetAccessToken = (req) => {
+export const spotifyGetAccessToken = (req,redirectUrl = urlSpRedirect) => {
   return new Promise((resolve, reject) => {
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
     // console.log(client_secret, "secret");
@@ -55,7 +53,7 @@ const spotifyGetAccessToken = (req) => {
       // convert data to url encoded data
       const details = {
         code: code,
-        redirect_uri: redirect_uri,
+        redirect_uri: redirectUrl,
         grant_type: "authorization_code",
       };
 
@@ -67,7 +65,7 @@ const spotifyGetAccessToken = (req) => {
       }
       formBody = formBody.join("&");
       // console.log(formBody, "formBody");
-      fetch(urlToken, {
+      fetch(urlSpToken, {
         method: "POST",
         headers: {
           Authorization:
@@ -82,8 +80,11 @@ const spotifyGetAccessToken = (req) => {
           // console.log("spotifyGetAccessToken RESPONSE", r);
           const { access_token } = r;
           // res.json(r);
-
-          resolve({ token: access_token, data: state });
+          if (!access_token) {
+            console.log("access_token", access_token, r);
+            reject(r);
+          }
+          resolve({ token: access_token, data: JSON.parse(state) });
         })
         .catch((err) => {
           console.log("ERROR: ", err, ": spotifyGetAccessToken");
@@ -97,7 +98,7 @@ const spotifySearch = (req, res) => {
   return new Promise((resolve, reject) => {
     spotifyGetAccessToken(req).then(
       async ({ token, data }) => {
-        const searchFor = data && JSON.parse(data);
+        const searchFor = data;
         console.log(searchFor, "data");
         const found = {};
         const failed = [];
@@ -139,7 +140,7 @@ const spotifySearch = (req, res) => {
           (item) =>
             item && typeof item == "string" && item.split("spotify:track:")
         );
-        spotifyAddToPlaylistProcess("current", uris, token);
+        spotifyNewPlaylistSetup("current", uris, token);
         res.json({ found: uris, failed });
         // res.send(token)
       },
@@ -151,7 +152,7 @@ const spotifySearch = (req, res) => {
   });
 };
 
-export { spotifySearch as spotify, spotifyLogin as login };
+export { spotifySearch as spotify, spotifyLogin };
 
 export const test = (req, res) => {
   console.log("router test complete");
@@ -202,7 +203,7 @@ const spotifyCreatePlaylist = (user_id, token) => {
       resolve(null);
     }
     console.log("-- creating playlist --");
-    fetch(urlSpotifyCreatePlaylist(userid), {
+    fetch(urlSpCreatePlaylist(userid), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -237,12 +238,12 @@ const spotifyAddItemsToPlaylist = async (playlistId, uris = [], token) => {
   // to add only 100 uris per request
   for (let index = 0; index < uris.length; index += 100) {
     const res = await toFetch(
-      urlSpotifyAddToPlaylist(playlistId),
+      urlSpPlaylistTracks(playlistId),
       {
         uris: uris.slice(index, index + 100),
       },
       "POST",
-      { Authorization: `Bearer ${token}` }
+      token
     );
     if (res) {
       // success
@@ -253,7 +254,7 @@ const spotifyAddItemsToPlaylist = async (playlistId, uris = [], token) => {
   }
 };
 
-const spotifyAddToPlaylistProcess = async (user_id, uris, token) => {
+const spotifyNewPlaylistSetup = async (user_id, uris, token) => {
   const playlistId = await spotifyCreatePlaylist(user_id, token);
   if (!playlistId) {
     console.log("FAILED TO CREATE PLATLIST");
@@ -263,9 +264,7 @@ const spotifyAddToPlaylistProcess = async (user_id, uris, token) => {
 };
 
 const spotifyGetCurrentUserId = async (token) => {
-  const data = await toFetch(urlCurrentUser, undefined, "GET", {
-    Authorization: `Bearer ${token}`,
-  });
+  const data = await toFetch(urlCurrentUser, undefined, "GET", token);
   if (data) {
     console.log("USER ID", data.id);
     return data.id;
