@@ -98,6 +98,7 @@ export const spotifyToYt = async (req, res) => {
     }
     // TRY AGAIN FOR MISSED ITEMS
     const failed = status.filter((item) => item && typeof item == "number");
+    console.log("FAILED ",failed);
     if (failed.length > 0) {
       for (const index of failed) {
         // trying only missed values

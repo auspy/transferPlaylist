@@ -156,7 +156,7 @@ export { spotifySearch as spotify, spotifyLogin };
 
 export const test = (req, res) => {
   console.log("router test complete");
-  res.sendFile(__dirname + "/src/index/index.html");
+  res.sendFile(__dirname + "/public/index.html");
 };
 
 const spotifyFilterSearch = (foundItems, search) => {

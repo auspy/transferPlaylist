@@ -4,7 +4,7 @@ import {
   spotifyToYtAuth,
   spotifyToYtQuery,
 } from "../components/spotify/spotifyToYt.js";
-import { test, spotify, spotifyLogin } from "../src/spotify.js";
+import { spotify, spotifyLogin, test } from "../src/spotify.js";
 import { ytToSpotifyQuery, ytToSpotify } from "../src/youtube.js";
 
 const router = express.Router();

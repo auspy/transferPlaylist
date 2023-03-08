@@ -4,6 +4,8 @@ import { fileURLToPath } from "url";
 export const __filename = fileURLToPath(import.meta.url);
 
 export const __dirname = path.dirname(__filename);
+export const urlLocalhostIp = "http://192.168.18.107:3000/"
+export const urlLocalhost = "http://localhost:3000/"
 
 // SPOTIFY
 export const urlSpRedirect = "http://localhost:3000/spotify";
