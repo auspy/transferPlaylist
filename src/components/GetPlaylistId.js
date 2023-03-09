@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import { urlLocalhost } from "../../paths";
+const urlLocalhost = "http://localhost:3000/";
 
 const GetPlaylistId = ({ type = "spotify" }) => {
-  const [spotifyUrl, setSpotifyUrl] = useState(null);
-  const [url, setuUrl] = useState(null);
+  const [spotifyUrl, setSpotifyUrl] = React.useState(null);
+  const [url, setuUrl] = React.useState(null);
   const fromYoutube = type === "youtube";
   const domain = "https://4913-43-248-236-207.in.ngrok.io/";
   const getPlaylistId = (url) => {
@@ -46,7 +45,7 @@ const GetPlaylistId = ({ type = "spotify" }) => {
       setuUrl(url);
     }
   };
-  useEffect(() => {
+  React.useEffect(() => {
     changeUrl();
   }, [spotifyUrl]);
   return (
@@ -96,4 +95,10 @@ const GetPlaylistId = ({ type = "spotify" }) => {
   );
 };
 
-export default GetPlaylistId;
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <>
+    {<GetPlaylistId/>}
+    {<GetPlaylistId type="youtube" />}
+  </>
+);

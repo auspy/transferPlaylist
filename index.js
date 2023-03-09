@@ -6,7 +6,6 @@ console.log(process.env.TEST);
 import express from "express";
 import router from "./router/router.js";
 import cors from "cors";
-import path from "path"
 import { __dirname } from "./paths.js";
 
 // VARIABLES
