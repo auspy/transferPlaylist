@@ -13,6 +13,10 @@ const app = express();
 app.use(cors({ origin: "*", methods: "GET" }));
 const port = 3000;
 
+// SETUP EJS
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
 // LISTEN
 app.listen(port, () => {
   console.log(`App listening on port ${port}!`);

@@ -1,3 +1,4 @@
+import queryString from "query-string";
 import { urlSpRedirectGet } from "../../paths.js";
 import { spotifyLogin } from "../../src/spotify.js";
 import ytAddPlaylistItems from "../youtube/addPlaylistItems.js";
@@ -27,7 +28,9 @@ export const spotifyToYtQuery = (req, res) => {
 export const spotifyToYt = async (req, res) => {
   const endFunction = (reason) => {
     console.log(reason);
-    res.json(reason);
+    // res.json(reason);
+
+    res.redirect("/?reason=" + reason);
     return reason;
   };
   console.log("--- starting transfer from spotify to yt ---");
@@ -69,7 +72,7 @@ export const spotifyToYt = async (req, res) => {
     }
     console.log("searchFor", searchFor);
     // CREATE PLAYLIST
-    const playlistId = await ytCreatePlaylist(auth, "Spotify Transfer");
+    const playlistId = await ytCreatePlaylist(auth, "New TransferPlaylist");
     if (!playlistId) {
       const err = "failed to create playlist";
       return endFunction(err);
@@ -97,7 +100,8 @@ export const spotifyToYt = async (req, res) => {
       status.push(added || index);
     }
     // TRY AGAIN FOR MISSED ITEMS
-    const failed = status.filter((item) => item && typeof item == "number");
+    const failed = status.filter((item) => item && typeof item == "string");
+    const failedQuery = [];
     console.log("FAILED ", failed);
     if (failed.length > 0) {
       for (const index of failed) {
@@ -108,10 +112,19 @@ export const spotifyToYt = async (req, res) => {
           results[index].id.videoId,
           results[index].id.kind
         );
+        console.log("new try for", index, "=>", added);
+        if (typeof added == "string" || typeof added == "number") {
+          failedQuery.push(searchFor[index]);
+        }
         status[index] = added;
       }
     }
-    res.json({ results, status });
+    const query = queryString.stringify({
+      failed: failedQuery,
+      playlistId,
+      type: "youtube",
+    });
+    res.redirect("/results?" + query);
 
     // // ADD ITEMS TO PLAYLIST
   } catch (error) {

@@ -30,7 +30,7 @@ const spotifyLogin = (req, res, redirect_uri = urlSpRedirect) => {
   );
 };
 
-export const spotifyGetAccessToken = (req,redirectUrl = urlSpRedirect) => {
+export const spotifyGetAccessToken = (req, redirectUrl = urlSpRedirect) => {
   return new Promise((resolve, reject) => {
     const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
     // console.log(client_secret, "secret");
@@ -129,24 +129,45 @@ const spotifySearch = (req, res) => {
               const items = value.tracks?.items;
               // resolve(items);
               const filtered = spotifyFilterSearch(items, search);
-              if (filtered.includes("_alt")) {
+              if (filtered && filtered.includes("_alt")) {
                 console.log("FILTERED NULL FOR", track);
                 failed.push(query);
               }
-              found[track] = filtered?.replace("_alt", "");
+              found[track] = filtered && filtered.replace("_alt", "");
             });
         }
         const uris = Object.values(found).filter(
           (item) =>
             item && typeof item == "string" && item.split("spotify:track:")
         );
-        spotifyNewPlaylistSetup("current", uris, token);
-        res.json({ found: uris, failed });
-        // res.send(token)
+        const playlistId = await spotifyNewPlaylistSetup(
+          "current",
+          uris,
+          token
+        );
+        // res.json({ found: uris, failed });
+        // res.render("pages/results", {
+        //   results: JSON.stringify({
+        //     // found: uris,
+        //     failed,
+        //     playlistId,
+        //     type: "spotify",
+        //   }),
+        // });
+        const query = queryString.stringify({
+          // found: uris,
+          failed,
+          playlistId,
+          type: "spotify",
+        });
+        res.redirect("/results?" + query);
       },
       (err) => {
         console.log("ERROR: ", err, ": spotifyCallback");
-        reject(err);
+        const query = queryString.stringify({
+          err,
+        });
+        res.redirect("/?" + query);
       }
     );
   });
@@ -156,7 +177,9 @@ export { spotifySearch as spotify, spotifyLogin };
 
 export const test = (req, res) => {
   console.log("router test complete");
-  res.sendFile(__dirname + "/public/index.html");
+  // to test results page with data
+  // res.render("pages/results", { results: `{"found":[{"kind":"youtube#searchResult","etag":"LPk1XxavJ2lar4M-h7Kdcc8_IgY","id":{"kind":"youtube#video","videoId":"EbyAoYaUcVo"},"snippet":{"publishedAt":"2022-12-15T05:30:10Z","channelId":"UCtpDorOuxwQ1URGQ0WLIXmQ","title":"WOH (Official Video) - Ikka x Dino James x Badshah | Def Jam India","description":"India's Hip-Hop superstars Ikka, Dino James & Badshah come together to channel their inner hopeless romanticism on 'Woh.","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/EbyAoYaUcVo/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/EbyAoYaUcVo/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/EbyAoYaUcVo/hqdefault.jpg","width":480,"height":360}},"channelTitle":"Dino James","liveBroadcastContent":"none","publishTime":"2022-12-15T05:30:10Z"}},{"kind":"youtube#searchResult","etag":"VjGusd-rXF1zZ9M48G-aysq9EnM","id":{"kind":"youtube#video","videoId":"S9bCLPwzSC0"},"snippet":{"publishedAt":"2009-12-25T04:20:46Z","channelId":"UC20vb-R_px4CguHzzBPhoyQ","title":"Eminem - Mockingbird [Official Music Video]","description":"Eminem - Mockingbird Listen: https://eminem.lnk.to/mockingbird Spotify: https://eminem.lnk.to/mockingbird/spotify Apple Music: ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/S9bCLPwzSC0/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/S9bCLPwzSC0/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/S9bCLPwzSC0/hqdefault.jpg","width":480,"height":360}},"channelTitle":"EminemVEVO","liveBroadcastContent":"none","publishTime":"2009-12-25T04:20:46Z"}},{"kind":"youtube#searchResult","etag":"7Wx-fylkyIH4JDqFOAZglBoOO0k","id":{"kind":"youtube#video","videoId":"Cxg6xPmSFFU"},"snippet":{"publishedAt":"2020-11-18T06:30:11Z","channelId":"UC7_zJCOlMgGD80Iv656xCjg","title":"Zaeden - socha na tha (Official Music Video)","description":"Subscribe to Zaeden's Channel: https://bit.ly/ZaedenYouTube Stream: https://atozae.lnk.to/snt 'socha na tha' is Zaeden's fourth ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/Cxg6xPmSFFU/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/Cxg6xPmSFFU/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/Cxg6xPmSFFU/hqdefault.jpg","width":480,"height":360}},"channelTitle":"Zaeden","liveBroadcastContent":"none","publishTime":"2020-11-18T06:30:11Z"}},{"kind":"youtube#searchResult","etag":"qrN_odJBGpoFQ4s98P51IxWDcc4","id":{"kind":"youtube#video","videoId":"tsmPCi7NKrg"},"snippet":{"publishedAt":"2023-02-16T17:00:07Z","channelId":"UCI3H1FsjbdqGcLq93ZilV5g","title":"NF - HOPE","description":"Official music video for “HOPE” by NF. New Album HOPE available April 7th. Subscribe to NFrealmusic on YouTube: ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/tsmPCi7NKrg/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/tsmPCi7NKrg/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/tsmPCi7NKrg/hqdefault.jpg","width":480,"height":360}},"channelTitle":"NFVEVO","liveBroadcastContent":"none","publishTime":"2023-02-16T17:00:07Z"}},{"kind":"youtube#searchResult","etag":"DndKQopN6pw7iORGxHcYrwxP8zc","id":{"kind":"youtube#video","videoId":"T8nbNQpRwNo"},"snippet":{"publishedAt":"2023-02-24T18:00:21Z","channelId":"UCQznUf1SjfDqx65hX3zRDiA","title":"Drake, 21 Savage - Spin Bout U (Official Music Video)","description":"director - dave meyers ep/producer - nathan scherrer prod company - freenjoy director rep - lark creative cinematographer - scott ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/T8nbNQpRwNo/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/T8nbNQpRwNo/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/T8nbNQpRwNo/hqdefault.jpg","width":480,"height":360}},"channelTitle":"DrakeVEVO","liveBroadcastContent":"none","publishTime":"2023-02-24T18:00:21Z"}},{"kind":"youtube#searchResult","etag":"y56kxhaxKpmrxCHStjnHNi8TKns","id":{"kind":"youtube#video","videoId":"QqyuVF1u7_Y"},"snippet":{"publishedAt":"2023-02-22T05:41:19Z","channelId":"UCMXMp3Lc6v6v8dJH5ZGwtqA","title":"RAFTAAR x PRABH DEEP - TRAP PRAA (Explicit Warning) | PRAA | Official Video","description":"Listen to PRAA EP on all audio stores:- Spotify: https://raftaar.bfan.link/praa/spotify Apple: https://raftaar.bfan.link/praa/appleMusic ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/QqyuVF1u7_Y/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/QqyuVF1u7_Y/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/QqyuVF1u7_Y/hqdefault.jpg","width":480,"height":360}},"channelTitle":"Raftaar","liveBroadcastContent":"none","publishTime":"2023-02-22T05:41:19Z"}},{"kind":"youtube#searchResult","etag":"fmSArXLLz5bB2yWVyUg0sr62Lvs","id":{"kind":"youtube#video","videoId":"oRZ0cfZ9SeU"},"snippet":{"publishedAt":"2018-02-07T13:41:42Z","channelId":"UCGpd2UgWSQyMqR-odhXygNA","title":"Vilen - Ek Raat (Official Video)","description":"A philosophical art piece and a journey of depression, altered by some series of events! Music available on! Saavn: ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/oRZ0cfZ9SeU/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/oRZ0cfZ9SeU/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/oRZ0cfZ9SeU/hqdefault.jpg","width":480,"height":360}},"channelTitle":"Darks Music Company","liveBroadcastContent":"none","publishTime":"2018-02-07T13:41:42Z"}},{"kind":"youtube#searchResult","etag":"k21Gky1rTRZ8QlC1Z0aeFLEuTM8","id":{"kind":"youtube#video","videoId":"AdE1Tkl66N0"},"snippet":{"publishedAt":"2023-03-04T10:57:13Z","channelId":"UCq-Fj5jknLsUf-MWSy4_brA","title":"O Bedardeya (Song) Tu Jhoothi Main Makkaar | Ranbir, Shraddha | Pritam | Arijit Singh | Amitabh B","description":"RanbirKapoor #ShraddhaKapoor #LuvRanjan Experience the gush of emotions with O Bedardya song from the movie Tu Jhoothi ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/AdE1Tkl66N0/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/AdE1Tkl66N0/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/AdE1Tkl66N0/hqdefault.jpg","width":480,"height":360}},"channelTitle":"T-Series","liveBroadcastContent":"none","publishTime":"2023-03-04T10:57:13Z"}},{"kind":"youtube#searchResult","etag":"YWL5IbMWmTIet8mw0UgfJ7LNDy0","id":{"kind":"youtube#video","videoId":"dj-si81J4c0"},"snippet":{"publishedAt":"2023-03-07T10:26:09Z","channelId":"UCGpd2UgWSQyMqR-odhXygNA","title":"Vilen - Kyun Dhunde (Official 1Min Music Video)","description":"Official Vertical Video of the one that you already love. Full Music Video releasing soon! if you ever feel lonely, just move out, ...","thumbnails":{"default":{"url":"https://i.ytimg.com/vi/dj-si81J4c0/default.jpg","width":120,"height":90},"medium":{"url":"https://i.ytimg.com/vi/dj-si81J4c0/mqdefault.jpg","width":320,"height":180},"high":{"url":"https://i.ytimg.com/vi/dj-si81J4c0/hqdefault.jpg","width":480,"height":360}},"channelTitle":"Darks Music Company","liveBroadcastContent":"none","publishTime":"2023-03-07T10:26:09Z"}}],"failed":[],"status":[{"kind":"youtube#video","videoId":"EbyAoYaUcVo"},"1",{"kind":"youtube#video","videoId":"Cxg6xPmSFFU"},"3",{"kind":"youtube#video","videoId":"T8nbNQpRwNo"},{"kind":"youtube#video","videoId":"QqyuVF1u7_Y"},{"kind":"youtube#video","videoId":"oRZ0cfZ9SeU"},"7",{"kind":"youtube#video","videoId":"dj-si81J4c0"}],"playlistId":"PLFmYDZOVM51eSJ5HCcA6eq1EQF1g2-FPb","type":"youtube"}` });
+  res.render("pages/index", { test: "data is here" });
 };
 
 const spotifyFilterSearch = (foundItems, search) => {
@@ -210,8 +233,8 @@ const spotifyCreatePlaylist = (user_id, token) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: "New Playlist",
-        description: "New playlist description",
+        name: "New TransferPlaylist",
+        description: "Thanks for using TRANSFER PLAYLIST",
         public: false,
       }),
     })
@@ -261,6 +284,7 @@ const spotifyNewPlaylistSetup = async (user_id, uris, token) => {
     return;
   }
   await spotifyAddItemsToPlaylist(playlistId, uris, token);
+  return playlistId;
 };
 
 const spotifyGetCurrentUserId = async (token) => {

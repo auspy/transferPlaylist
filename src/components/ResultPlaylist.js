@@ -1,10 +1,29 @@
+const typeDataNew = {
+  spotify: {
+    color: "var(--spotify)",
+    icon: (
+      <img
+        src="/src/assets/images/ImgSpotify.png"
+        height={50}
+        alt={"spotify"}
+      ></img>
+    ),
+  },
+  youtube: {
+    color: "var(--youtube)",
+    icon: (
+      <img src="/src/assets/images/ImgYt.png" height={50} alt={"youtube"}></img>
+    ),
+  },
+};
+
 // * COMPONENTS
 const TryAgainBtn = React.memo(() => {
   return (
     <div className="bannerBox">
       <h2 className="semi14 lightBgColor textCenter">
         to Try with different playlist{" "}
-        <a href="#" className="rColor">
+        <a href="/" className="rColor">
           <u>click here</u>
         </a>
       </h2>
@@ -17,15 +36,10 @@ const Heading = React.memo(({ type = "youtube" }) => {
     <>
       <div className="frcc">
         {/* ICON */}
-        <img
-          src="/src/assets/images/ImgYt.png"
-          height={50}
-          alt={"youtube"}
-          className="mr20"
-        ></img>
+        {typeDataNew?.[type]?.icon}
         {/* HEADING */}
         <h1
-          className="caps"
+          className="caps ml20"
           style={{
             width: "min-content",
           }}
@@ -37,7 +51,7 @@ const Heading = React.memo(({ type = "youtube" }) => {
   );
 });
 
-const IconGoto = () => {
+const IconGoto = React.memo(() => {
   return (
     <svg
       width="20"
@@ -52,54 +66,64 @@ const IconGoto = () => {
       />
     </svg>
   );
-};
+});
 
-const NewPlaylistLink = React.memo(
-  ({
-    type = "youtube",
-    gotoLink = "https://www.youtube.com/playlist?list=PLFmYDZOVM51fDVu1od-Yk2URRkVqNCiiu",
-  }) => {
-    return (
-      <>
-        <div className="regu12 paraColor mr10 mb5">{`Link to new ${type} playlist`}</div>
-        <div className="frc">
-          <input
-            className={"inputBox frc"}
-            style={{
-              height: 46,
-              borderColor: "var(--impText)",
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-              //   whiteSpace: "nowrap",
-              //   overflow: "hidden",
-            }}
-            defaultValue={gotoLink}
-            type={"text"}
-            disabled={true}
-          />
-          <button
-            disabled={!gotoLink || gotoLink === "#"}
-            style={{
-              width: "unset",
-              height: 46,
-              borderTopLeftRadius: 0,
-              borderBottomLeftRadius: 0,
-              borderLeftWidth: 0,
-            }}
-            className="priBtn p10 frc"
-            onClick={() => {
-              alert(gotoLink);
-              // window.location.href = url;
-            }}
-          >
-            <span className="mr5">GOTO</span>
-            <IconGoto />
-          </button>
-        </div>
-      </>
-    );
-  }
-);
+const NewPlaylistLink = React.memo(({ type = "youtube", playlistId }) => {
+  const [gotoLink, setGoToLink] = React.useState("#");
+  console.log(type, playlistId);
+  React.useEffect(() => {
+    let link = "#";
+    if (type == "spotify") {
+      link = `https://open.spotify.com/playlist/${playlistId}`;
+    } else if (type == "youtube") {
+      link = `https://www.youtube.com/playlist?list=${playlistId}`;
+    }
+    console.log("hrer", link);
+    setGoToLink(link);
+  }, [type, playlistId]);
+  console.log("GOTO LINK", gotoLink);
+  return (
+    <>
+      <div className="regu12 paraColor mr10 mb5">{`Link to new ${type} playlist`}</div>
+      <div className="frc">
+        <input
+          className={"inputBox frc"}
+          style={{
+            height: 46,
+            borderColor: "var(--impText)",
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            //   whiteSpace: "nowrap",
+            //   overflow: "hidden",
+          }}
+          value={gotoLink}
+          type={"text"}
+          disabled={true}
+        />
+        <button
+          disabled={!gotoLink || gotoLink === "#"}
+          style={{
+            width: "unset",
+            height: 46,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            borderLeftWidth: 0,
+          }}
+          className="priBtn p10 frc"
+          onClick={() => {
+            if (gotoLink) {
+              // window.location.href = gotoLink;
+              window.open(gotoLink,"_blank")
+            }
+          }}
+        >
+          <span className="mr5">GOTO</span>
+          <IconGoto />
+        </button>
+      </div>
+    </>
+  );
+});
 
 const FailedList = ({ list }) => {
   if (!(Array.isArray(list) && list.length > 0)) {
@@ -123,8 +147,13 @@ const FailedList = ({ list }) => {
 };
 
 // * MAIN
-const ResultPlaylist = () => {
-  const failedSongs = ["song name"];
+const ResultPlaylist = (props) => {
+  const result = props.result && JSON.parse(props.result);
+  console.log("props results", result);
+  const failedSongs = result.failed;
+  const playlistId = result.playlistId;
+  const convertedTo = String(result.type);
+  console.log(failedSongs, playlistId);
   return (
     <>
       {/* TRY AGAIN OPTION */}
@@ -132,10 +161,10 @@ const ResultPlaylist = () => {
       {/* BG BOX */}
       <div className="commonBox p20 mt20">
         {/* PLAYLIST TYPE HEADING */}
-        <Heading type={"youtube"} />
+        <Heading type={convertedTo} />
         {/* NEW PLAYLIST LINK */}
         <div className="mt30" />
-        <NewPlaylistLink type={"youtube"} />
+        <NewPlaylistLink type={convertedTo} playlistId={playlistId} />
         {/* FAILED SONGS */}
         <FailedList list={failedSongs} />
       </div>
@@ -144,5 +173,6 @@ const ResultPlaylist = () => {
 };
 
 // * TO RENDER IN HTML
-const root = ReactDOM.createRoot(document.getElementById("results"));
-root.render(<>{<ResultPlaylist />}</>);
+const results = document.getElementById("results");
+const resultsRoot = ReactDOM.createRoot(results);
+resultsRoot.render(<>{<ResultPlaylist {...results.dataset} />}</>);

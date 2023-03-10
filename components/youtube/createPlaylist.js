@@ -2,7 +2,7 @@ import { youtube } from "./ytImports.js";
 
 export default function ytCreatePlaylist(
   auth,
-  playlistTitle = "New Playlist",
+  playlistTitle = "New TransferPlaylist",
   part = [],
   body = {}
 ) {

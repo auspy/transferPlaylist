@@ -25,6 +25,7 @@ const typeData = {
         <div>4. copy share link</div>
       </div>,
     ],
+    url: "spotifyToYt",
   },
   youtube: {
     color: "var(--youtube)",
@@ -32,6 +33,7 @@ const typeData = {
       <img src="/src/assets/images/ImgYt.png" height={50} alt={"youtube"}></img>
     ),
     eg: "https://www.youtube.com/playlist?list=PLFmYDZOVM51fDkVqNCiiu",
+    url: "ytToSpotify",
   },
 };
 const types = ["spotify to youtube", "youtube to spotify"];
@@ -108,8 +110,9 @@ const SubmitButton = ({ url = "#", from = "", to = "" }) => {
       disabled={!url || url === "#"}
       className="priBtn"
       onClick={() => {
-        alert(url);
-        // window.location.href = url;
+        // alert(url);
+        console.log("url", url);
+        window.location.href = url;
       }}
     >
       copy from {from} to {to}
@@ -139,15 +142,13 @@ const HowToGetPlaylistId = ({ from = "" }) => {
       <h1>How to get playlist url?</h1>
       <ChangeGetPlaylistFromBtn stepsOf={stepsOf} setStepsOf={setStepsOf} />
       {/* steps */}
-      <div id="steps">
-      {typeData[stepsOf]?.steps?.map((step) => step)}
-      </div>
+      <div id="steps">{typeData[stepsOf]?.steps?.map((step) => step)}</div>
     </div>
   );
 };
 
 // * MAIN
-const GetPlaylistId = () => {
+const GetPlaylistId = (props) => {
   const [inputUrl, setInputUrl] = React.useState("");
   const [gotoUrl, setGotoUrl] = React.useState(null);
   const domain = "https://4913-43-248-236-207.in.ngrok.io/";
@@ -191,9 +192,7 @@ const GetPlaylistId = () => {
       // navigate to next url
       const url =
         // "http://192.168.18.107:3000/" +
-        urlLocalhost +
-        (from ? "ytToSpotify" : "spotifyToYt") +
-        `?playlistId=${playlistId}`;
+        urlLocalhost + typeData[from]?.url + `?playlistId=${playlistId}`;
       // console.log("playlistId", playlistId);
       // navigate(url);
       setGotoUrl(url);
@@ -203,10 +202,11 @@ const GetPlaylistId = () => {
   };
   React.useEffect(() => {
     changeUrl();
-  }, [inputUrl,from]);
+  }, [inputUrl, from]);
 
   // * CONSOLE
-  console.log(from, "to", to);
+  // console.log(props,"props");
+  console.log(from, "to", to, typeData[from]?.url);
   return (
     <>
       {/* BG BOX */}
@@ -252,5 +252,6 @@ const GetPlaylistId = () => {
 };
 
 // * TO RENDER IN HTML
-const root = ReactDOM.createRoot(document.getElementById("home"));
-root.render(<>{<GetPlaylistId />}</>);
+const home = document.getElementById("home");
+const root = ReactDOM.createRoot(home);
+root.render(<>{<GetPlaylistId {...home.dataset} />}</>);

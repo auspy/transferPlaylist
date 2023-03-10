@@ -1,4 +1,5 @@
 import express from "express";
+import results from "../components/results.js";
 import {
   spotifyToYt,
   spotifyToYtAuth,
@@ -9,6 +10,7 @@ import { ytToSpotifyQuery, ytToSpotify } from "../src/youtube.js";
 
 const router = express.Router();
 router.get("/", test);
+router.get("/results",results)
 
 // * SPOTIFY
 router.get("/spotify", spotify);
