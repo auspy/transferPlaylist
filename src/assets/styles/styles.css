@@ -1,0 +1,163 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Oswald:wght@700&display=swap");
+
+:root {
+  --darkBg: #161616;
+  --impText: #fafafa;
+  --lightBg: #404040;
+  --bg: #282828;
+  --green: #6fffae;
+  --red: #ff4b4b;
+  --lightText: #b3b3b3;
+  --paraText: #e2e2e2;
+  --spotify: #00d95f;
+  --youtube: #ff0000;
+}
+
+#logo {
+  font-family: "Oswald", sans-serif;
+  font-size: 1.75rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 41px;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+  color: var(--impText);
+  align-self: center;
+  text-align: center;
+}
+
+body,
+select,
+input {
+  font-family: "Montserrat", sans-serif;
+}
+
+body,
+select,
+input {
+  background-color: var(--darkBg);
+  color: var(--impText);
+}
+
+/* TEXT */
+h2{
+  font-family: "Oswald",sans-serif;
+  text-transform: uppercase;
+  font-size: 1.375rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 41px;
+  /* letter-spacing: -0.075em; */
+}
+
+/* BOXES */
+.inputBox {
+  box-sizing: border-box;
+  background: var(--lightBg);
+  border: 1px solid var(--lightBg);
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  width: 100%;
+  padding:0px 15px;
+  color: var(--impText);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.inputBox:focus {
+  border: 1px solid #fafafa;
+}
+.input {
+  text-decoration: none;
+}
+
+.commonBox {
+  background: var(--bg);
+}
+.bannerBox{
+  background-color: var(--impText);
+}
+
+/* BORDER */
+.lightBorder,
+.commonBox {
+  border: 1px solid var(--lightBg);
+}
+
+/* TEXT COLOR */
+.paraColor {
+  color: var(--paraText);
+}
+
+.hColor {
+  color: var(--impText);
+}
+
+.lightColor {
+  color: var(--lightText);
+}
+.rColor{
+  color: var(--red);
+}
+
+.lightBgColor{
+  color: var(--lightBg);
+}
+
+/* BUTTONS */
+.priBtn {
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+  background: var(--darkBg);
+  border: 1px solid var(--impText);
+  border-radius: 3px;
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 15px;
+  text-transform: uppercase;
+  width: 100%;
+  color: var(--impText);
+}
+
+.priBtn:disabled {
+  background: var(--darkBg);
+  border: 1px solid var(--lightBg);
+  color: var(--lightBg);
+}
+
+.selectStepsOfBtn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5px;
+  width: 100%;
+  color: var(--impText);
+  text-transform: capitalize;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background-color: var(--darkBg);
+  border-bottom: 1px solid var(--lightText);
+}
+
+/* STEPS */
+#steps>div{
+  margin-top: 30px;
+}
+
+#steps>div>h2{
+  margin-bottom: 10px;
+}
+
+#steps>div>div{
+  margin-bottom: 10px;
+}
+
+/* LINES */
+hr{
+  width: 100%;
+  background-color: var(--lightBg);
+  height: 1px;
+}

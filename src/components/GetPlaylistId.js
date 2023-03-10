@@ -1,14 +1,168 @@
+// * VARIABLES
 const urlLocalhost = "http://localhost:3000/";
+const typeData = {
+  spotify: {
+    color: "var(--spotify)",
+    icon: (
+      <img
+        src="/src/assets/images/ImgSpotify.png"
+        height={50}
+        alt={"spotify"}
+      ></img>
+    ),
+    eg: "https://open.spotify.com/playlist/523Lk85e0sFkOMId4o",
+    steps: [
+      <div key={Math.random()}>
+        <h2>From browser</h2>
+        <div>1. open ope.spotify.com on any browser</div>
+        <div>2. copy url from search bar</div>
+      </div>,
+      <div key={Math.random()}>
+        <h2>From web app</h2>
+        <div>1. Open playlist section </div>
+        <div>2. Right click on playlist </div>
+        <div>3. click on share playlist</div>
+        <div>4. copy share link</div>
+      </div>,
+    ],
+  },
+  youtube: {
+    color: "var(--youtube)",
+    icon: (
+      <img src="/src/assets/images/ImgYt.png" height={50} alt={"youtube"}></img>
+    ),
+    eg: "https://www.youtube.com/playlist?list=PLFmYDZOVM51fDkVqNCiiu",
+  },
+};
+const types = ["spotify to youtube", "youtube to spotify"];
 
-const GetPlaylistId = ({ type = "spotify" }) => {
-  const [spotifyUrl, setSpotifyUrl] = React.useState(null);
-  const [url, setuUrl] = React.useState(null);
-  const fromYoutube = type === "youtube";
+// * ICONS
+const IconRightArrow = () => {
+  return (
+    <svg
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M24.015 16.5H7.5C6.675 16.5 6 17.175 6 18C6 18.825 6.675 19.5 7.5 19.5H24.015V22.185C24.015 22.86 24.825 23.19 25.29 22.71L29.46 18.525C29.745 18.225 29.745 17.76 29.46 17.46L25.29 13.275C24.825 12.795 24.015 13.14 24.015 13.8V16.5Z"
+        fill="white"
+      />
+    </svg>
+  );
+};
+
+// * COMPONENTS
+const TypeButtons = ({ from = "spotify", setFrom = () => {} }) => {
+  return (
+    <div className="frc w100">
+      {types?.map((type) => (
+        <div
+          onClick={() => {
+            setFrom(type);
+          }}
+          key={type}
+          className="caps bold12 w100 textCenter hover lightBorder"
+          style={{
+            borderWidth: 0,
+            borderBottomWidth: 1,
+            borderBottomColor:
+              type.split("to")[0].trim() == from && typeData[from]?.color,
+            padding: "11px 0",
+            color:
+              type.split("to")[0].trim() == from
+                ? "var(--impText)"
+                : "var(--lightText)",
+          }}
+        >
+          {type}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const TransferIcons = ({ from = "spotify", to = "youtube" }) => {
+  return (
+    <div className="frcc w100 hover">
+      {/* FROM */}
+      {typeData[from]?.icon}
+      {/* ARROW */}
+      <div className="mh15">
+        <IconRightArrow />
+      </div>
+      {/* TO */}
+      {typeData[to]?.icon}
+    </div>
+  );
+};
+
+const SubmitButton = ({ url = "#", from = "", to = "" }) => {
+  return (
+    <button
+      style={{
+        height: 40,
+      }}
+      disabled={!url || url === "#"}
+      className="priBtn"
+      onClick={() => {
+        alert(url);
+        // window.location.href = url;
+      }}
+    >
+      copy from {from} to {to}
+    </button>
+  );
+};
+
+const ChangeGetPlaylistFromBtn = ({ stepsOf = "", setStepsOf = () => {} }) => {
+  return (
+    <select
+      value={stepsOf}
+      onChange={(e) => {
+        setStepsOf(e.target.value);
+      }}
+      className={`selectStepsOfBtn hover mt10`}
+    >
+      {typeData &&
+        Object.keys(typeData).map((type) => <option key={type}>{type}</option>)}
+    </select>
+  );
+};
+
+const HowToGetPlaylistId = ({ from = "" }) => {
+  const [stepsOf, setStepsOf] = React.useState(from);
+  return (
+    <div className="">
+      <h1>How to get playlist url?</h1>
+      <ChangeGetPlaylistFromBtn stepsOf={stepsOf} setStepsOf={setStepsOf} />
+      {/* steps */}
+      <div id="steps">
+      {typeData[stepsOf]?.steps?.map((step) => step)}
+      </div>
+    </div>
+  );
+};
+
+// * MAIN
+const GetPlaylistId = () => {
+  const [inputUrl, setInputUrl] = React.useState("");
+  const [gotoUrl, setGotoUrl] = React.useState(null);
   const domain = "https://4913-43-248-236-207.in.ngrok.io/";
+  const [from, setFrom] = React.useState(types[0].split("to")[0].trim());
+  const [to, setTo] = React.useState(types[0].split("to")[1].trim());
+  const changeToFrom = (type) => {
+    if (type) {
+      setFrom(type.split("to")[0].trim());
+      setTo(type.split("to")[1].trim());
+    }
+  };
   const getPlaylistId = (url) => {
     const urlParts =
       url?.split("/").filter((item) => item && !item.includes("http")) || [];
-    if (fromYoutube) {
+    if (from == "youtube") {
       // https://www.youtube.com/playlist?list=PLFmYDZOVM51fDVu1od-Yk2URRkVqNCiiu
       if (urlParts.length === 2) {
         if (
@@ -24,81 +178,79 @@ const GetPlaylistId = ({ type = "spotify" }) => {
         if (
           urlParts[0] === "open.spotify.com" &&
           urlParts[1] === "playlist" &&
-          urlParts[2].length > 0
+          urlParts[2]?.length > 0
         ) {
-          return urlParts[2];
+          return urlParts[2].split(/(&|\?)/)[0];
         }
       }
     }
   };
   const changeUrl = () => {
-    const playlistId = getPlaylistId(spotifyUrl);
+    const playlistId = getPlaylistId(inputUrl);
     if (playlistId) {
       // navigate to next url
       const url =
         // "http://192.168.18.107:3000/" +
         urlLocalhost +
-        (fromYoutube ? "ytToSpotify" : "spotifyToYt") +
+        (from ? "ytToSpotify" : "spotifyToYt") +
         `?playlistId=${playlistId}`;
       // console.log("playlistId", playlistId);
       // navigate(url);
-      setuUrl(url);
+      setGotoUrl(url);
+    } else {
+      setGotoUrl("#");
     }
   };
   React.useEffect(() => {
     changeUrl();
-  }, [spotifyUrl]);
+  }, [inputUrl,from]);
+
+  // * CONSOLE
+  console.log(from, "to", to);
   return (
     <>
-      <h1>{fromYoutube ? "Youtube to Spotify" : "Spotify to Youtube"}</h1>
-      <label htmlFor="playlistId">{`Enter ${type} playlist url`}</label>
-      <input
-        type={"text"}
-        maxLength={200}
-        onChange={(e) => {
-          console.log(e.target.value);
-          setSpotifyUrl(e.target.value);
-        }}
-        name={"playlistId"}
-      />
-      {/* <button
-        disabled={spotifyUrl?.length < 1}
-        onClick={() => {
-          const playlistId = getPlaylistId(spotifyUrl);
-          if (playlistId) {
-            // navigate to next url
-            const url =
-              urlLocalhost +
-              (fromYoutube ? "ytToSpotify" : "spotifyToYt") +
-              `?playlistId=${playlistId}`;
-            // console.log("playlistId", playlistId);
-            // navigate(url);
-            toFetch(url, null, "GET").then((data) => {
-              console.log(data, "here");
-            });
-          } else {
-            alert("wrong url");
-          }
-        }}
-      >
-        Submit
-      </button> */}
-      <a
-        href={url}
-        onClick={() => {
-          console.log(url);
-        }}
-      >
-        Submit
-      </a>
+      {/* BG BOX */}
+      <div className="fcc commonBox">
+        {/* TYPE BUTTONS */}
+        <TypeButtons from={from} setFrom={changeToFrom} />
+        {/* CONTENT BOX */}
+        <div className="p10 mb10" style={{ width: "100%" }}>
+          {/* TYPES ICONS */}
+          <div className="mt30 mb30">
+            <TransferIcons from={from} to={to} />
+          </div>
+          <div className="frc" style={{ flexWrap: "wrap" }}>
+            <div className="regu12 paraColor mr10 mb5">{`Enter or paste ${from} playlist url`}</div>
+            <div className="regu10 lightColor mb5">{`(Eg: ${typeData[from]?.eg})`}</div>
+          </div>
+          <input
+            type={"text"}
+            className={"inputBox mb10"}
+            maxLength={200}
+            style={{
+              height: 46,
+              borderColor: !inputUrl
+                ? "var(--lightBg)"
+                : gotoUrl == "#"
+                ? "var(--red)"
+                : "var(--green)",
+            }}
+            value={inputUrl}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setInputUrl(e.target.value);
+            }}
+            name={"playlistId"}
+          />
+          <SubmitButton url={gotoUrl} from={from} to={to} />
+        </div>
+      </div>
+      <div className="mt40" />
+      {<HowToGetPlaylistId from={from} />}
     </>
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <>
-    {<GetPlaylistId/>}
-    {<GetPlaylistId type="youtube" />}
-  </>
-);
+// * TO RENDER IN HTML
+const root = ReactDOM.createRoot(document.getElementById("home"));
+root.render(<>{<GetPlaylistId />}</>);
