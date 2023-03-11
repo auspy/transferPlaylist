@@ -36,10 +36,10 @@ export const spotifyToYt = async (req, res) => {
   console.log("--- starting transfer from spotify to yt ---");
   try {
     // GET YT AND SPOTIFY AUTH
-    const data = await spGetPlaylistItems(req);
+    const items = await spGetPlaylistItems(req);
     const auth = await ytGetAuth();
     const searchFor = [];
-    if (!data) {
+    if (!items) {
       const err = "missing data spotifyToYt";
       return endFunction(err);
     }
@@ -47,9 +47,6 @@ export const spotifyToYt = async (req, res) => {
       const err = "missing yt auth spotifyToYt";
       return endFunction(err);
     }
-
-    // GET NAMES OF SONGS FROM PLAYLIST
-    const items = data.items;
     // console.log("spotify playlist items", items);
     if (!(items && Array.isArray(items))) {
       const err = "missing spotify playlist items";

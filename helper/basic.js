@@ -30,7 +30,7 @@ export async function toFetch(
     })
     .catch((err) => {
       console.log("error in fetch is", err);
-      return null;
+     throw new Error(err)
     });
 }
 
