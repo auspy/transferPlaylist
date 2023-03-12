@@ -19,6 +19,7 @@
     "googleapis": "^112.0.0",
     "node-fetch": "^3.3.0",
     "nodemon": "^2.0.21",
+    "pm2": "^5.2.2",
     "query-string": "^8.1.0",
     "react-router-dom": "^6.8.2"
   }

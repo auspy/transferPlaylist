@@ -102,20 +102,22 @@ const TransferIcons = ({ from = "spotify", to = "youtube" }) => {
 };
 
 const SubmitButton = ({ url = "#", from = "", to = "" }) => {
+  const [loading, setLoading] = React.useState(false);
   return (
     <button
       style={{
         height: 40,
       }}
-      disabled={!url || url === "#"}
+      disabled={!url || url === "#" || loading}
       className="priBtn"
       onClick={() => {
         // alert(url);
+        setLoading(true);
         console.log("url", url);
         window.location.href = url;
       }}
     >
-      copy from {from} to {to}
+      {loading ? `Loading...` : `copy from ${from} to ${to}`}
     </button>
   );
 };
