@@ -1,6 +1,6 @@
 import fs from "fs";
-import readline from "readline";
 import { google } from "googleapis";
+import queryString from "query-string";
 
 const OAuth2 = google.auth.OAuth2;
 
@@ -19,7 +19,7 @@ const TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-async function authorize(credentials, callback) {
+async function authorize(req, res, credentials, callback) {
   return new Promise((resolve, reject) => {
     const clientSecret = credentials.web.client_secret;
     const clientId = credentials.web.client_id;
@@ -33,7 +33,7 @@ async function authorize(credentials, callback) {
     fs.readFile(TOKEN_PATH, async function (err, token) {
       try {
         if (err) {
-          resolve(await getNewToken(oauth2Client, callback));
+          resolve(await getNewToken(req, res, oauth2Client, callback));
         } else {
           oauth2Client.credentials = JSON.parse(token);
           const callBack = await callback(oauth2Client);
@@ -55,32 +55,55 @@ async function authorize(credentials, callback) {
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-async function getNewToken(oauth2Client, callback) {
+async function getNewToken(req, res, oauth2Client, callback) {
   return new Promise((resolve, reject) => {
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: "offline",
       scope: SCOPES,
     });
-    console.log("Authorize this app by visiting this url: ", authUrl);
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    rl.question("Enter the code from that page here: ", function (code) {
-      rl.close();
-      oauth2Client.getToken(code, async function (err, token) {
-        if (err) {
-          let e = "Error while trying to retrieve access token" + err;
-          console.log(e);
-          reject(e);
+    // send user to the link
+    res.redirect(authUrl);
+  });
+}
+
+export async function youtubeCallback(req, res) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(
+      "/Users/spark/Desktop/reactApps/transferPlaylist/keys/client_secret.json",
+      async function processClientSecrets(err, content) {
+        try {
+          if (err) {
+            let e = "Error loading client secret file: " + err;
+            console.log(e);
+            reject(e);
+          }
+          const credentials = JSON.parse(content);
+          const clientSecret = credentials.web.client_secret;
+          const clientId = credentials.web.client_id;
+          const redirectUrl = credentials.web.redirect_uris[0];
+          if (!(clientSecret && clientId && redirectUrl)) {
+            reject("missing params authorize yt");
+          }
+          const oauth2Client = new OAuth2(clientId, clientSecret, redirectUrl);
+          // read code from that url can send it here
+          const code = req.query?.code;
+          oauth2Client.getToken(code, async function (err, token) {
+            if (err) {
+              let e = "Error while trying to retrieve access token" + err;
+              console.log(e);
+              reject(e);
+            }
+            oauth2Client.credentials = token;
+            console.log("token,", token);
+            // ! enter token by replacing %2F with /
+            storeToken(token);
+            res.redirect("/");
+          });
+        } catch (error) {
+          console.log("ytGetAuth", error, "ytGetAuth");
         }
-        oauth2Client.credentials = token;
-        console.log("token,", token);
-        // ! enter token by replacing %2F with /
-        storeToken(token);
-        resolve(await callback(oauth2Client));
-      });
-    });
+      }
+    );
   });
 }
 
@@ -107,7 +130,7 @@ function storeToken(token) {
 }
 
 // Load client secrets from a local file.
-const ytGetAuth = async () => {
+const ytGetAuth = async (req, res) => {
   return new Promise((resolve, reject) => {
     fs.readFile(
       "/Users/spark/Desktop/reactApps/transferPlaylist/keys/client_secret.json",
@@ -120,9 +143,17 @@ const ytGetAuth = async () => {
           }
           console.log("content", JSON.parse(content));
           // Authorize a client with the loaded credentials, then call the YouTube API.
-          await authorize(JSON.parse(content), (auth) => resolve(auth));
+          await authorize(req, res, JSON.parse(content), (auth) =>
+            resolve(auth)
+          );
           // console.log("a", items);
         } catch (error) {
+          res.redirect(
+            "/?" +
+              queryString({
+                err: error,
+              })
+          );
           console.log("ytGetAuth", error, "ytGetAuth");
         }
       }
@@ -131,3 +162,17 @@ const ytGetAuth = async () => {
 };
 
 export default ytGetAuth;
+
+export function removeYtAccount(req, res) {
+  return fs.unlink(TOKEN_PATH, (err) => {
+    if (err) {
+      console.log(err);
+      res.send({ status: "failed" });
+      return;
+    } else {
+      console.log("removed yt account file");
+      res.send({ status: "ok" });
+      return;
+    }
+  });
+}

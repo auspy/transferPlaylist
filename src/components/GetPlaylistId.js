@@ -82,6 +82,7 @@ const TypeButtons = ({ from = "spotify", setFrom = () => {} }) => {
           {type}
         </div>
       ))}
+      <RemoveYtAccountBtn />
     </div>
   );
 };
@@ -146,6 +147,35 @@ const HowToGetPlaylistId = ({ from = "" }) => {
       {/* steps */}
       <div id="steps">{typeData[stepsOf]?.steps?.map((step) => step)}</div>
     </div>
+  );
+};
+// CHANGE ACCOUNT BUTTON
+const RemoveYtAccountBtn = () => {
+  return (
+    <button
+      style={{
+        height: 40,
+      }}
+      // className="priBtn"
+      onClick={() => {
+        fetch(urlLocalhost + "removeYtAccount", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            console.log("response", res, "account remove");
+            alert(
+              "Current account removed\nYou will be asked to add other account to transfer playlist."
+            );
+          })
+          .catch((err) => {
+            console.log(err, "in change yt acc btn");
+          });
+      }}
+    >
+      Change Youtube Account
+    </button>
   );
 };
 

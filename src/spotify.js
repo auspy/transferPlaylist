@@ -26,6 +26,7 @@ const spotifyLogin = (req, res, redirect_uri = urlSpRedirect) => {
         scope: scope,
         redirect_uri: redirect_uri,
         state: JSON.stringify(data ? data : state),
+        show_dialog: true,
       })
   );
 };

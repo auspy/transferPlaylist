@@ -4,10 +4,10 @@ import { youtube } from "./ytImports.js";
 // todo we can get more results and then filter correct result if needed
 // for now i think yt search works great
 
-const ytSearch = (auth, searchFor) => {
+const ytSearch = (auth, searchFor, req, res) => {
   return new Promise(async (resolve, reject) => {
     if (!auth) {
-      auth = await ytGetAuth();
+      auth = await ytGetAuth(req, res);
     }
     youtube.search
       .list({

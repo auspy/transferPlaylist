@@ -5,7 +5,7 @@ import { spotifyLogin } from "./spotify.js";
 export const ytToSpotify = async (req, res) => {
   const playlistId = req.params?.playlistId;
   console.log("req.params", playlistId);
-  const auth = await ytGetAuth();
+  const auth = await ytGetAuth(req, res);
   if (!auth) {
     return "missing auth";
   }

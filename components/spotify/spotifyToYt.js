@@ -37,7 +37,7 @@ export const spotifyToYt = async (req, res) => {
   try {
     // GET YT AND SPOTIFY AUTH
     const items = await spGetPlaylistItems(req);
-    const auth = await ytGetAuth();
+    const auth = await ytGetAuth(req, res);
     const searchFor = [];
     if (!items) {
       const err = "missing data spotifyToYt";
@@ -79,7 +79,7 @@ export const spotifyToYt = async (req, res) => {
     const status = [];
     for (const search of searchFor) {
       if (search) {
-        results.push(await ytSearch(auth, search));
+        results.push(await ytSearch(auth, search, req, res));
       }
     }
     for (const index in results) {
