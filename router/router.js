@@ -1,17 +1,20 @@
 import express from "express";
 import results from "../components/results.js";
+import { spotify, spotifyLogin, test } from "../components/spotify.js";
+import { ytToSpotifyQuery, ytToSpotify } from "../components/youtube.js";
 import {
   spotifyToYt,
   spotifyToYtAuth,
   spotifyToYtQuery,
 } from "../components/spotify/spotifyToYt.js";
-import { removeYtAccount, youtubeCallback } from "../components/youtube/quickstart.js";
-import { spotify, spotifyLogin, test } from "../src/spotify.js";
-import { ytToSpotifyQuery, ytToSpotify } from "../src/youtube.js";
+import {
+  removeYtAccount,
+  youtubeCallback,
+} from "../components/youtube/quickstart.js";
 
 const router = express.Router();
 router.get("/", test);
-router.get("/results",results)
+router.get("/results", results);
 
 // * SPOTIFY
 router.get("/spotify", spotify);
@@ -23,7 +26,7 @@ router.get("/spotifyToYt/:playlistId", spotifyToYtAuth);
 // * YOUTUBE
 router.get("/ytToSpotify", ytToSpotifyQuery);
 router.get("/ytToSpotify/:playlistId", ytToSpotify);
-router.get("/youtubeCallback",youtubeCallback)
-router.post("/removeYtAccount",removeYtAccount)
+router.get("/youtubeCallback", youtubeCallback);
+router.post("/removeYtAccount", removeYtAccount);
 
 export default router;

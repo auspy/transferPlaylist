@@ -1,15 +1,18 @@
 {
   "name": "playlist",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "babel": "npx babel --watch src --out-dir . --presets babel-preset-react-app/prod"
   },
   "author": "kshetez",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.21.0",
+    "babel-preset-react-app": "^10.0.1",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -22,5 +25,15 @@
     "pm2": "^5.2.2",
     "query-string": "^8.1.0",
     "react-router-dom": "^6.8.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auspy/transferPlaylist.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/auspy/transferPlaylist/issues"
+  },
+  "homepage": "https://github.com/auspy/transferPlaylist#readme",
+  "description": ""
 }

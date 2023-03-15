@@ -1,6 +1,6 @@
 import { toFetch } from "../../helper/basic.js";
 import { urlSpPlaylistTracks, urlSpRedirectGet } from "../../paths.js";
-import { spotifyGetAccessToken } from "../../src/spotify.js";
+import { spotifyGetAccessToken } from "../spotify.js";
 
 const spGetPlaylistItems = (req) => {
   return new Promise((resolve, reject) => {

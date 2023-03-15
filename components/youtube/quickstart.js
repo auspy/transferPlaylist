@@ -9,9 +9,8 @@ const OAuth2 = google.auth.OAuth2;
 const SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"];
 // const SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
 const TOKEN_DIR =
-  (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE) +
-  "/.credentials/";
-const TOKEN_PATH = TOKEN_DIR + "youtube-nodejs-quickstart.json";
+  (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE)
+const TOKEN_PATH = TOKEN_DIR + "/.credentials/youtube-nodejs-quickstart.json";
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -69,7 +68,7 @@ async function getNewToken(req, res, oauth2Client, callback) {
 export async function youtubeCallback(req, res) {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      "/Users/spark/Desktop/reactApps/transferPlaylist/keys/client_secret.json",
+      `${TOKEN_DIR}/Desktop/reactApps/transferPlaylist/keys/client_secret.json`,
       async function processClientSecrets(err, content) {
         try {
           if (err) {
@@ -133,7 +132,7 @@ function storeToken(token) {
 const ytGetAuth = async (req, res) => {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      "/Users/spark/Desktop/reactApps/transferPlaylist/keys/client_secret.json",
+      `${TOKEN_DIR}/Desktop/reactApps/transferPlaylist/keys/client_secret.json`,
       async function processClientSecrets(err, content) {
         try {
           if (err) {

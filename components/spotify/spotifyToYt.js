@@ -1,6 +1,6 @@
 import queryString from "query-string";
 import { urlSpRedirectGet } from "../../paths.js";
-import { spotifyLogin } from "../../src/spotify.js";
+import { spotifyLogin } from "../spotify.js";
 import ytAddPlaylistItems from "../youtube/addPlaylistItems.js";
 import ytCreatePlaylist from "../youtube/createPlaylist.js";
 import ytGetAuth from "../youtube/quickstart.js";

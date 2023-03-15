@@ -1,5 +1,7 @@
 // * VARIABLES
 const urlLocalhost = "http://localhost:3000/";
+const urlAws = "";
+const urlMain = urlLocalhost;
 const typeData = {
   spotify: {
     color: "var(--spotify)",
@@ -158,7 +160,7 @@ const RemoveYtAccountBtn = () => {
       }}
       // className="priBtn"
       onClick={() => {
-        fetch(urlLocalhost + "removeYtAccount", {
+        fetch(urlMain + "removeYtAccount", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
         })
