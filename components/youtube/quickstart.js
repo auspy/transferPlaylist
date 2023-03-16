@@ -9,7 +9,7 @@ const OAuth2 = google.auth.OAuth2;
 const SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"];
 // const SCOPES = ["https://www.googleapis.com/auth/youtube.readonly"];
 const TOKEN_DIR =
-  (process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE)
+  process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 const TOKEN_PATH = TOKEN_DIR + "/.credentials/youtube-nodejs-quickstart.json";
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -40,7 +40,8 @@ async function authorize(req, res, credentials, callback) {
           resolve(callBack);
         }
       } catch (error) {
-        reject(error);
+        console.log("error, authorize", error);
+        resolve(await getNewToken(req, res, oauth2Client, callback));
       }
     });
   });
