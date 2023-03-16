@@ -8,8 +8,8 @@ function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefine
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // * VARIABLES
 var urlLocalhost = "http://localhost:3000/";
-var urlAws = "";
-var urlMain = urlLocalhost;
+var urlAws = "http://ec2-3-26-39-139.ap-southeast-2.compute.amazonaws.com:3000/";
+var urlMain = urlAws;
 var typeData = {
   spotify: {
     color: "var(--spotify)",
@@ -233,7 +233,7 @@ var GetPlaylistId = function GetPlaylistId(props) {
       // navigate to next url
       var url =
       // "http://192.168.18.107:3000/" +
-      urlLocalhost + ((_typeData$from3 = typeData[from]) === null || _typeData$from3 === void 0 ? void 0 : _typeData$from3.url) + "?playlistId=".concat(playlistId);
+      urlMain + ((_typeData$from3 = typeData[from]) === null || _typeData$from3 === void 0 ? void 0 : _typeData$from3.url) + "?playlistId=".concat(playlistId);
       // console.log("playlistId", playlistId);
       // navigate(url);
       setGotoUrl(url);

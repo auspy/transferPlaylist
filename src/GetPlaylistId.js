@@ -1,7 +1,8 @@
 // * VARIABLES
 const urlLocalhost = "http://localhost:3000/";
-const urlAws = "";
-const urlMain = urlLocalhost;
+const urlAws =
+  "http://ec2-3-26-39-139.ap-southeast-2.compute.amazonaws.com:3000/";
+const urlMain = urlAws;
 const typeData = {
   spotify: {
     color: "var(--spotify)",
@@ -226,7 +227,7 @@ const GetPlaylistId = (props) => {
       // navigate to next url
       const url =
         // "http://192.168.18.107:3000/" +
-        urlLocalhost + typeData[from]?.url + `?playlistId=${playlistId}`;
+        urlMain + typeData[from]?.url + `?playlistId=${playlistId}`;
       // console.log("playlistId", playlistId);
       // navigate(url);
       setGotoUrl(url);
