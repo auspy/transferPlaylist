@@ -4,12 +4,15 @@ import { fileURLToPath } from "url";
 export const __filename = fileURLToPath(import.meta.url);
 
 export const __dirname = path.dirname(__filename);
-export const urlLocalhostIp = "http://192.168.18.107:3000/"
-export const urlLocalhost = "http://localhost:3000/"
+export const urlLocalhostIp = "http://192.168.18.107:3000/";
+export const urlLocalhost = "http://localhost:3000/";
 
 // SPOTIFY
-export const urlSpRedirect = "http://localhost:3000/spotify";
-export const urlSpRedirectGet = "http://localhost:3000/spotifyGet"
+export const __DEV__ = process.env.NODE_ENV == "development";
+const localhost = "http://localhost:3000/";
+const aws = "http://3.26.39.139:3000/";
+export const urlSpRedirect = __DEV__ ? localhost : aws + "spotify";
+export const urlSpRedirectGet = __DEV__ ? localhost : aws + "spotifyGet";
 // const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";
 export const urlSpotifySearch = "https://api.spotify.com/v1/search?";
 export const urlSpToken = "https://accounts.spotify.com/api/token";
