@@ -11,10 +11,14 @@ import {
   removeYtAccount,
   youtubeCallback,
 } from "../components/youtube/quickstart.js";
+import privacyPolicy from "../components/privacyPolicy.js";
+import termsOfService from "../components/termsOfService.js";
 
 const router = express.Router();
 router.get("/", test);
 router.get("/results", results);
+router.get("/privacyPolicy",privacyPolicy)
+router.get("/termsOfService",termsOfService)
 
 // * SPOTIFY
 router.get("/spotify", spotify);
