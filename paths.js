@@ -9,10 +9,9 @@ export const urlLocalhost = "http://localhost:3000/";
 
 // SPOTIFY
 export const __DEV__ = process.env.NODE_ENV == "development";
-const localhost = "http://localhost:3000/";
-const aws = "http://3.26.39.139:3000/";
-export const urlSpRedirect = __DEV__ ? localhost : aws + "spotify";
-export const urlSpRedirectGet = __DEV__ ? localhost : aws + "spotifyGet";
+const aws = "https://www.transferplaylist.world/";
+export const urlSpRedirect = __DEV__ ? urlLocalhost : aws + "spotify";
+export const urlSpRedirectGet = __DEV__ ? urlLocalhost : aws + "spotifyGet";
 // const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";
 export const urlSpotifySearch = "https://api.spotify.com/v1/search?";
 export const urlSpToken = "https://accounts.spotify.com/api/token";

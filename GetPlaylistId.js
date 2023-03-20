@@ -8,7 +8,7 @@ function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefine
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // * VARIABLES
 var urlLocalhost = "http://localhost:3000/";
-var urlAws = "http://ec2-3-26-39-139.ap-southeast-2.compute.amazonaws.com:3000/";
+var urlAws = "https://www.transferplaylist.world/";
 var urlMain = urlAws;
 var typeData = {
   spotify: {
