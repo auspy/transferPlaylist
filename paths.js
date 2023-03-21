@@ -1,5 +1,6 @@
 import path from "path";
 import { fileURLToPath } from "url";
+import { NODE_ENV } from "./server.js";
 
 export const __filename = fileURLToPath(import.meta.url);
 
@@ -8,7 +9,7 @@ export const urlLocalhostIp = "http://192.168.18.107:3000/";
 export const urlLocalhost = "http://localhost:3000/";
 
 // SPOTIFY
-export const __DEV__ = process.env.NODE_ENV == "development";
+export const __DEV__ = false
 const aws = "https://www.transferplaylist.world/";
 export const urlSpRedirect = __DEV__ ? urlLocalhost : aws + "spotify";
 export const urlSpRedirectGet = __DEV__ ? urlLocalhost : aws + "spotifyGet";
