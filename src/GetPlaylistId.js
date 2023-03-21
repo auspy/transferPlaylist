@@ -2,7 +2,7 @@
 const urlLocalhost = "http://localhost:3000/";
 const urlAws =
   "https://www.transferplaylist.world/";
-const urlMain = urlLocalhost;
+const urlMain = urlAws;
 const typeData = {
   spotify: {
     color: "var(--spotify)",

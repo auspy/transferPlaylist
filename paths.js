@@ -8,7 +8,7 @@ export const urlLocalhostIp = "http://192.168.18.107:3000/";
 export const urlLocalhost = "http://localhost:3000/";
 
 // SPOTIFY
-export const __DEV__ = true;
+export const __DEV__ = false;
 const aws = "https://www.transferplaylist.world/";
 export const urlSpRedirect = (__DEV__ ? urlLocalhost : aws) + "spotify";
 export const urlSpRedirectGet = (__DEV__ ? urlLocalhost : aws) + "spotifyGet";

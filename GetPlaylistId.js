@@ -9,7 +9,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 // * VARIABLES
 var urlLocalhost = "http://localhost:3000/";
 var urlAws = "https://www.transferplaylist.world/";
-var urlMain = urlLocalhost;
+var urlMain = urlAws;
 var typeData = {
   spotify: {
     color: "var(--spotify)",
