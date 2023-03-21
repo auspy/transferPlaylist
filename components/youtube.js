@@ -28,13 +28,7 @@ export const ytToSpotify = async (req, res) => {
             // split using "-,|" to get track and artist name
             const searchFor = title
               .split(/[|\-\[\]\(\)]/i)
-              .filter(
-                (item) =>
-                  item &&
-                  !item.toLowerCase().includes("song") &&
-                  !item.toLowerCase().includes("title") &&
-                  !item.toLowerCase().includes("track")
-              )
+              .filter((item) => item && !item.toLowerCase().includes("song"))
               .map(
                 (item) =>
                   item &&
