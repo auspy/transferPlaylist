@@ -38,7 +38,10 @@ export default async function ytGetPlaylistItems(
         // console.log(items);
       },
       function (err) {
-        console.error("Execute error", err);
+        console.log(err.errors[0]);
+        console.error("Execute error", err.errors[0]);
+        // throw new Error(err.errors[0])
+        throw new Error(err)
       }
     );
   return items;

@@ -11,6 +11,7 @@ const SCOPES = ["https://www.googleapis.com/auth/youtube.force-ssl"];
 const TOKEN_DIR =
   process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 const TOKEN_PATH = TOKEN_DIR + "/.credentials/youtube-nodejs-quickstart.json";
+const uriIndex = 0;
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
@@ -22,7 +23,7 @@ async function authorize(req, res, credentials, callback) {
   return new Promise((resolve, reject) => {
     const clientSecret = credentials.web.client_secret;
     const clientId = credentials.web.client_id;
-    const redirectUrl = credentials.web.redirect_uris[0];
+    const redirectUrl = credentials.web.redirect_uris[uriIndex];
     if (!(clientSecret && clientId && redirectUrl)) {
       reject("missing params authorize yt");
     }
@@ -80,7 +81,7 @@ export async function youtubeCallback(req, res) {
           const credentials = JSON.parse(content);
           const clientSecret = credentials.web.client_secret;
           const clientId = credentials.web.client_id;
-          const redirectUrl = credentials.web.redirect_uris[0];
+          const redirectUrl = credentials.web.redirect_uris[uriIndex];
           if (!(clientSecret && clientId && redirectUrl)) {
             reject("missing params authorize yt");
           }

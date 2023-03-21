@@ -17,6 +17,7 @@ const spotifyLogin = (req, res, redirect_uri = urlSpRedirect) => {
   const scope =
     "user-read-private user-read-email playlist-modify-public playlist-modify-private";
   const data = req.body;
+  // console.log(data, "fata");
   // console.log("redirect_uri", redirect_uri);
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
@@ -85,6 +86,7 @@ export const spotifyGetAccessToken = (req, redirectUrl = urlSpRedirect) => {
             console.log("access_token", access_token, r);
             reject(r);
           }
+          // console.log("state =>", state);
           resolve({ token: access_token, data: JSON.parse(state) });
         })
         .catch((err) => {
@@ -104,8 +106,15 @@ const spotifySearch = (req, res) => {
         const found = {};
         const failed = [];
         for (const search of searchFor) {
-          const track = search?.track?.[1] || "lonely";
-          const query = search?.track?.join(" ");
+          if (!search) {
+            continue;
+          }
+          const filterSearch = search.track?.map(
+            (item) => item && item.replace(/\+/g, " ")
+          );
+          console.log(filterSearch, "filterSearch");
+          const track = filterSearch?.[1] || "lonely";
+          const query = filterSearch?.join(" ");
           // const artist = (search?.track?.[0] || "Akon").replace(/\s/, "%20");
           // const year = search?.year;
           const type = ["track"].toString();
@@ -130,7 +139,12 @@ const spotifySearch = (req, res) => {
               const items = value.tracks?.items;
               // resolve(items);
               const filtered = spotifyFilterSearch(items, search);
-              if (filtered && filtered.includes("_alt")) {
+              if (
+                (filtered &&
+                  filtered.includes("_alt") &&
+                  filtered.length < 5) ||
+                !filtered
+              ) {
                 console.log("FILTERED NULL FOR", track);
                 failed.push(query);
               }

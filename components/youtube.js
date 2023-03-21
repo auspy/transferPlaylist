@@ -22,13 +22,19 @@ export const ytToSpotify = async (req, res) => {
           items.map((item) => {
             //   console.log("item => ", item);
             const title = item.snippet?.title;
-            // console.log("title", title);
+            console.log("title", title);
             // * SEARCH FOR ARTIST AND SONG NAME
             //     * FROM TITLE
             // split using "-,|" to get track and artist name
             const searchFor = title
               .split(/[|\-\[\]\(\)]/i)
-              .filter((item) => item && item.toLowerCase() != "song")
+              .filter(
+                (item) =>
+                  item &&
+                  !item.toLowerCase().includes("song") &&
+                  !item.toLowerCase().includes("title") &&
+                  !item.toLowerCase().includes("track")
+              )
               .map(
                 (item) =>
                   item &&
@@ -47,8 +53,7 @@ export const ytToSpotify = async (req, res) => {
             const year = new Date(
               item.contentDetails?.["videoPublishedAt"]
             ).getFullYear();
-
-            // console.log("searchFor", searchFor);
+            console.log("searchFor", searchFor);
             search.push({ track: searchFor, year });
           });
           // console.log("serh", search);
@@ -64,13 +69,19 @@ export const ytToSpotify = async (req, res) => {
       },
       (err) => {
         console.log(err, "in ytGetPlaylistItemsOf");
+        const query = queryString.stringify({
+          err,
+        });
+        // console.log(query);
+        res.redirect("/?" + query);
       }
     )
-    .catch((err) => {
-      console.log("ERROR: ", err, ": ytGetPlaylistItems");
+    .catch((error) => {
+      console.log("ERROR: ", error, ": ytGetPlaylistItems");
       const query = queryString.stringify({
         err,
       });
+      console.log(query);
       res.redirect("/?" + query);
     });
 };
