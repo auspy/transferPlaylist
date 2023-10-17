@@ -1,7 +1,6 @@
 // * VARIABLES
 const urlLocalhost = "http://localhost:3000/";
-const urlAws =
-  "https://www.transferplaylist.world/";
+const urlAws = "https://www.transferplaylist.onrender.com/";
 const urlMain = urlAws;
 const typeData = {
   spotify: {
