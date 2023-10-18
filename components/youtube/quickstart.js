@@ -70,7 +70,8 @@ async function getNewToken(req, res, oauth2Client, callback) {
 export async function youtubeCallback(req, res) {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      `${TOKEN_DIR}/Desktop/reactApps/transferPlaylist/keys/client_secret.json`,
+      // `${TOKEN_DIR}/transferPlaylist/keys/client_secret.json`,
+      "/etc/secrets/client_secret.json",
       async function processClientSecrets(err, content) {
         try {
           if (err) {
@@ -134,7 +135,8 @@ function storeToken(token) {
 const ytGetAuth = async (req, res) => {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      `${TOKEN_DIR}/Desktop/reactApps/transferPlaylist/keys/client_secret.json`,
+      // `${TOKEN_DIR}/Desktop/reactApps/transferPlaylist/keys/client_secret.json`,
+      "/etc/secrets/client_secret.json",
       async function processClientSecrets(err, content) {
         try {
           if (err) {
