@@ -116,7 +116,7 @@ export async function youtubeCallback(req, res) {
  */
 function storeToken(token) {
   try {
-    fs.mkdirSync(TOKEN_DIR);
+    fs.mkdirSync(TOKEN_DIR + "/.credentials");
   } catch (err) {
     if (err.code != "EEXIST") {
       throw err;
