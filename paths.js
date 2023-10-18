@@ -9,7 +9,7 @@ export const urlLocalhost = "http://localhost:3000/";
 
 // SPOTIFY
 export const __DEV__ = false;
-const aws = "https://www.transferplaylist.onrender.com";
+const aws = "https://transferplaylist.onrender.com/";
 export const urlSpRedirect = (__DEV__ ? urlLocalhost : aws) + "spotify";
 export const urlSpRedirectGet = (__DEV__ ? urlLocalhost : aws) + "spotifyGet";
 // const spotifyPlaylists = "https://api.spotify.com/v1/me/playlists";

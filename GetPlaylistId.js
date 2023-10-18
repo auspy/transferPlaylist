@@ -74,7 +74,7 @@ function _arrayWithHoles(arr) {
 }
 // * VARIABLES
 var urlLocalhost = "http://localhost:3000/";
-var urlAws = "https://www.transferplaylist.onrender.com/";
+var urlAws = "https://transferplaylist.onrender.com/";
 var urlMain = urlAws;
 var typeData = {
   spotify: {
