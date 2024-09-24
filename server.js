@@ -28,3 +28,6 @@ app.use(express.static(__dirname));
 
 // ROUTES
 app.use("/", router);
+app.get("/health", (req, res) => {
+  res.send("OK");
+});
